@@ -90,7 +90,9 @@ func readValidateOpts(request *http.Request) (io.ReadCloser, *ach.ValidateOpts, 
 	}
 
 	var buf bytes.Buffer
-	bs, _ := io.ReadAll(io.TeeReader(request.Body, &buf))
+
+	r := io.LimitReader(request.Body, maxBodySize)
+	bs, _ := io.ReadAll(io.TeeReader(r, &buf))
 
 	opts := &ach.ValidateOpts{}
 	json.Unmarshal(bs, opts)
